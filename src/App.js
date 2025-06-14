@@ -22,10 +22,8 @@ export const App = () => {
 		}
 	};
 
-	const openStepByTitle = (event) => {
-		const { target } = event;
-		const index = target.textContent;
-		setActiveIndex(index - 1);
+	const openStepByTitle = (index) => {
+		setActiveIndex(index);
 	};
 
 	const onResetButton = () => {
@@ -49,7 +47,7 @@ export const App = () => {
 									(index === activeIndex ? ' ' + styles.active : '')
 								}
 							>
-								<button onClick={openStepByTitle} className={styles['steps-item-button']}>
+								<button onClick={() => openStepByTitle(index)} className={styles['steps-item-button']}>
 									{index + 1}
 								</button>
 								{item.title}
