@@ -1,77 +1,77 @@
-import styles from './app.module.css';
-import data from './data.json';
+import styles from './App.module.css';
 import { useState } from 'react';
 
 export const App = () => {
-	// Можно задать 2 состояния — steps и activeIndex
-	const [steps, setSteps] = useState(data);
-	const [activeIndex, setActiveIndex] = useState(0);
+	const NUMS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const ACTIONS = ['C', '=', '-', '+']
 
-	const lastStep = steps.length - 1;
+	const [operand1, setOperand1] = useState('');
+	const [operand2, setOperand2] = useState('');
+	const [operator, setOperator] = useState('');
 
-	// И определить 3 обработчика: Клик назад, Клик вперед, Начать сначала
-	const onBackButton = () => {
-		if (activeIndex > 0) {
-			setActiveIndex(activeIndex - 1);
+	const numEnd = (num) => {
+		if (!operator) {
+			setOperand1(operand1 + num);
+		} else {
+			setOperand2(operand2 + num);
 		}
 	};
 
-	const onNextButton = () => {
-		if (activeIndex < lastStep) {
-			setActiveIndex(activeIndex + 1);
-		}
-	};
+  const doAction = (action) => {
+    switch (action) {
+      case '+':
+        setOperator('+');
+        break;
 
-	const openStepByTitle = (index) => {
-		setActiveIndex(index);
-	};
+      case '-':
+        setOperator('-');
+        break;
 
-	const onResetButton = () => {
-		setActiveIndex(0);
-	};
+      case 'C':
+        setOperand1('');
+        setOperand2('');
+        setOperator('');
+        break;
+
+      case '=':
+        if (operand1 && operand2 && operator) {
+          if (operator === '+') {
+            const answer = Number(operand1) + Number(operand2);
+            setOperand1(String(answer))
+          } else {
+            const answer = Number(operand1) - Number(operand2);
+            setOperand1(String(answer));
+          }
+          setOperand2('');
+          setOperator('');
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.card}>
-				<h1>Инструкция по готовке пельменей</h1>
-				<div className={styles.steps}>
-					<div className={styles['steps-content']}>{steps[activeIndex]['content']}</div>
-					<ul className={styles['steps-list']}>
-						{steps.map((item, index) => (
-							<li
-								key={item.id}
-								className={
-									styles['steps-item'] +
-									' ' +
-									(index < activeIndex ? ' ' + styles.done : '') +
-									(index === activeIndex ? ' ' + styles.active : '')
-								}
-							>
-								<button onClick={() => openStepByTitle(index)} className={styles['steps-item-button']}>
-									{index + 1}
-								</button>
-								{item.title}
-							</li>
-						))}
-					</ul>
-					<div className={styles['buttons-container']}>
-						<button
-							disabled={activeIndex === 0}
-							className={styles.button}
-							onClick={onBackButton}
-						>
-							Назад
+		<div className={styles.calculator}>
+			<div className={styles.display}>
+				<p className={styles.displayContent}>
+					{operand1 + (operator ? operator + operand2 : '')}
+				</p>
+			</div>
+			<div className={styles.buttons}>
+				<div className={styles.actions}>
+          {ACTIONS.map((action) => (
+            <button key={action} onClick={() => doAction(action)}>
+              {action}
+            </button>))}
+				</div>
+				<div className={styles.numbers}>
+					{NUMS.map((num) => (
+						<button key={num} onClick={() => numEnd(num)}>
+							{num}
 						</button>
-						{activeIndex !== steps.length - 1 ? (
-							<button className={styles.button} onClick={onNextButton}>
-								Далее
-							</button>
-						) : (
-							<button className={styles.button} onClick={onResetButton}>
-								Начать с начала
-							</button>
-						)}
-					</div>
+					))}
 				</div>
 			</div>
 		</div>
